@@ -3,12 +3,15 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 import numpy as np
 import math
+import os
 from scipy import optimize
 from scipy.optimize import curve_fit
 from matplotlib.ticker import MultipleLocator
 from Figure_Size import set_size, fig_fmt
 
 filename_in = '/Users/yulongzheng/Dropbox (GaTech)/P3HT_IL_BLENDS/UV/Aggregation.xlsx'
+# filepath_in = os.getcwd()
+# filename = UV_a
 pd.read_excel(filename_in, sheet_name='6 wt%', header=None)
 data = pd.read_excel(filename_in, sheet_name='6 wt%', header=None)
 nrow, ncol = np.shape(data)[0], np.shape(data)[1]
@@ -157,6 +160,18 @@ ax1.legend(frameon=False, loc='upper left', fontsize=8)
 set_size(4, 8)
 aa.tight_layout(pad=0.2)
 
+## Take the integral under the curve for neg and pos parts, repectively.
+ratio_list = []
+ind_325 = np.argmin(np.array(np.abs(data[0][2:]-3.25))) + 2 ## index for 3.25 eV
+
+cc_list = [] ## absorption cross-section list
+for i in range(len(aggre_list)):
+    agg = np.trapz(aggre_list[i][int(iso_list[i]):])
+    amo = np.trapz(aggre_list[i][ind_325:int(iso_list[i])])
+    cc = -agg/amo
+    cc_list.append(cc)
+
+cc_ratio = np.average(cc_list[:12])
 ### Fitting
 
 lb = 250  # index of low energy  ## 470  ## new set data 360
